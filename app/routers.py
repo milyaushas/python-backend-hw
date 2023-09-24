@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app import contracts
+from typing import List
 
 router = APIRouter()
 people = []
@@ -26,7 +27,7 @@ async def hello() -> str:
 
 
 @router.get("/hello/{name}", description="Method that accepts name and returns personal greeting message")
-async def hello_name(name: str):
+async def hello_name(name: str) -> str:
     """
     Method that validate accepts name and returns personal greeting message
 
@@ -39,7 +40,7 @@ async def hello_name(name: str):
 
 
 @router.post("/person/", description="Method that saves person's data in database and returns greeting message")
-async def create_person(person: contracts.Person):
+async def create_person(person: contracts.Person) -> str:
     """
     "Method that validates and saves person's data in database and returns greeting message"
 
@@ -57,7 +58,7 @@ async def create_person(person: contracts.Person):
 
 
 @router.get("/people/all", description="Method that returns info about all people stored in database")
-async def all_people():
+async def all_people() -> List[contracts.Person]:
     """
     Method that returns info about all people stored in database
 
