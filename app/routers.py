@@ -1,6 +1,8 @@
-from fastapi import APIRouter
-from app import contracts
 from typing import List
+
+from fastapi import APIRouter
+
+from app import contracts
 
 router = APIRouter()
 people = []
@@ -16,7 +18,9 @@ async def root() -> str:
     return ""
 
 
-@router.get("/hello", description="Method without parameters that returns greeting message.")
+@router.get(
+    "/hello", description="Method without params that returns greeting message."
+)
 async def hello() -> str:
     """
     Method without parameters that returns greeting message.
@@ -26,10 +30,12 @@ async def hello() -> str:
     return "Hello, world!"
 
 
-@router.get("/hello/{name}", description="Method that accepts name and returns personal greeting message")
+@router.get(
+    "/hello/{name}", description="Method that returns personal greeting message"
+)
 async def hello_name(name: str) -> str:
     """
-    Method that validate accepts name and returns personal greeting message
+    Method that validate name and returns personal greeting message
 
     :param name: user's name
     :return: greeting message or "Invalid name"
@@ -39,10 +45,10 @@ async def hello_name(name: str) -> str:
     return f"Hello, {name}!"
 
 
-@router.post("/person/", description="Method that saves person's data in database and returns greeting message")
+@router.post("/person/", description="Method that saves person's data")
 async def create_person(person: contracts.Person) -> str:
     """
-    "Method that validates and saves person's data in database and returns greeting message"
+    "Method that validates and saves person's data"
 
     :param person: name(str) and age(integer)
     :return: greeting message specified on person's age
@@ -57,7 +63,7 @@ async def create_person(person: contracts.Person) -> str:
     return f"Hello, {person.name}!"
 
 
-@router.get("/people/all", description="Method that returns info about all people stored in database")
+@router.get("/people/all", description="Method that returns info about all people")
 async def all_people() -> List[contracts.Person]:
     """
     Method that returns info about all people stored in database
