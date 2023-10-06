@@ -2,8 +2,9 @@ from app.contracts import Member, Book
 
 
 class LibraryService:
-    members = {}  # id -> member
-    books = {}  # id -> book
+    def __init__(self):
+        self.members = {}  # id -> member
+        self.books = {}  # id -> book
 
     def new_member(self, member: Member) -> (bool, str):
         if not member.name:
@@ -44,8 +45,8 @@ class LibraryService:
     def get_all_books_taken_by_member(self, member_id):
         if member_id not in self.members:
             return None
-        members_books = []
+        result = []
         for book in self.books.values():
             if book.holder_id == member_id:
-                members_books.append(book)
-        return members_books
+                result.append(book)
+        return result
