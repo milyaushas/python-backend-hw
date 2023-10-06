@@ -1,73 +1,61 @@
-from typing import List
-
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from app import contracts
+from app.library_service import LibraryService
 
 router = APIRouter()
-people = []
+service = LibraryService()
 
 
-@router.get("/", description="Root entrypoint")
-async def root() -> str:
-    """
-    Root entrypoint
+@router.post("/members/new")
+async def create_member(member: contracts.Member):
+    """Adds new library member to database"""
+    result, message = service.new_member(member)
+    if result:
+        code = status.HTTP_201_CREATED
+    else:
+        code = status.HTTP_400_BAD_REQUEST
 
-    :return: empty string
-    """
-    return ""
-
-
-@router.get(
-    "/hello", description="Method without params that returns greeting message."
-)
-async def hello() -> str:
-    """
-    Method without parameters that returns greeting message.
-
-    :return: greeting message
-    """
-    return "Hello, world!"
+    return {"status": code, "message": message}
 
 
-@router.get(
-    "/hello/{name}", description="Method that returns personal greeting message"
-)
-async def hello_name(name: str) -> str:
-    """
-    Method that validate name and returns personal greeting message
-
-    :param name: user's name
-    :return: greeting message or "Invalid name"
-    """
-    if not name:
-        return "Invalid name"
-    return f"Hello, {name}!"
+@router.post("/books/new")
+async def create_book(book: contracts.Book):
+    """Adds new book to library database"""
+    result, message = service.new_book(book)
+    if result:
+        code = status.HTTP_201_CREATED
+    else:
+        code = status.HTTP_400_BAD_REQUEST
+    return {"status": code, "message": message}
 
 
-@router.post("/person/", description="Method that saves person's data")
-async def create_person(person: contracts.Person) -> str:
-    """
-    "Method that validates and saves person's data"
-
-    :param person: name(str) and age(integer)
-    :return: greeting message specified on person's age
-    """
-    if person.name is None:
-        return "Invalid name"
-    if person.age is None or person.age < 0:
-        return "Invalid age"
-    people.append(person)
-    if person.age <= 25:
-        return f"Hiiii, {person.name} :3"
-    return f"Hello, {person.name}!"
+@router.post("/assign/{book_id}/to/{member_id}")
+async def assign_book_to_member(book_id: int, member_id: int):
+    """Updates info about book's current holder"""
+    result, message = service.give_book_to_member(book_id, member_id)
+    if result:
+        code = status.HTTP_200_OK
+    else:
+        code = status.HTTP_400_BAD_REQUEST
+    return {"status": code, "message": message}
 
 
-@router.get("/people/all", description="Method that returns info about all people")
-async def all_people() -> List[contracts.Person]:
-    """
-    Method that returns info about all people stored in database
+@router.post("/return/{book_id}")
+async def return_book_to_library(book_id: int):
+    """Updates info about book's current holder."""
+    result, message = service.return_book(book_id)
+    if result:
+        code = status.HTTP_200_OK
+    else:
+        code = status.HTTP_400_BAD_REQUEST
+    return {"status": code, "message": message}
 
-    :return: list of people
-    """
-    return people
+
+@router.post("/books/{member_id}")
+async def get_all_books_by_member_id(member_id: int):
+    """Returns all books that are taken by a specific library member at this moment"""
+    return {
+        "status": status.HTTP_200_OK,
+        "result": service.get_all_books_taken_by_member(member_id),
+    }
